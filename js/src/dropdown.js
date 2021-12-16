@@ -381,9 +381,10 @@ class Dropdown extends BaseComponent {
     //    - If key is not UP or DOWN => not a dropdown command
     //    - If trigger inside the menu => not a dropdown command
 
-    const isInput = /input|textarea/i.test(event.target.tagName)
-    const isEscapeEvent = event.key === ESCAPE_KEY
-    const isUpOrDownEvent = [ARROW_UP_KEY, ARROW_DOWN_KEY].includes(event.key)
+    const { target, key, delegateTarget } = event
+    const isInput = /input|textarea/i.test(target.tagName)
+    const isEscapeEvent = key === ESCAPE_KEY
+    const isUpOrDownEvent = [ARROW_UP_KEY, ARROW_DOWN_KEY].includes(key)
 
     if (!isInput && !(isUpOrDownEvent || isEscapeEvent)) {
       return
@@ -391,12 +392,12 @@ class Dropdown extends BaseComponent {
 
     if (isInput && !isEscapeEvent) {
       // eslint-disable-next-line unicorn/no-lonely-if
-      if (!isUpOrDownEvent || event.target.closest(SELECTOR_MENU)) {
+      if (!isUpOrDownEvent || target.closest(SELECTOR_MENU)) {
         return
       }
     }
 
-    const isActive = this.classList.contains(CLASS_NAME_SHOW)
+    const isActive = delegateTarget.classList.contains(CLASS_NAME_SHOW)
 
     if (!isActive && isEscapeEvent) {
       return
@@ -405,7 +406,7 @@ class Dropdown extends BaseComponent {
     event.preventDefault()
     event.stopPropagation()
 
-    const getToggleButton = SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, event.delegateTarget.parentNode)
+    const getToggleButton = SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, delegateTarget.parentNode)
     const instance = Dropdown.getOrCreateInstance(getToggleButton)
 
     if (isEscapeEvent) {
